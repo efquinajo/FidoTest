@@ -1,0 +1,137 @@
+
+import gob.adsib.fido.util.CertificateData;
+import org.bouncycastle.cert.ocsp.CertificateStatus;
+
+/**
+ *
+ * @author ADSIB-UID
+ */
+public class Test6_VerificarRevocacionOCSP {
+    public static void main(String cor[]) throws Exception{
+        String pemAdsib = "Subject: CN=Entidad Certificadora Publica ADSIB,O=ADSIB,C=BO\n" +
+"Issuer: CN=Entidad Certificadora Raiz de Bolivia,O=ATT,C=BO\n" +
+"-----BEGIN CERTIFICATE-----\n" +
+"MIIGlzCCBH+gAwIBAgIIDVNUG1JQENowDQYJKoZIhvcNAQELBQAwSzEuMCwGA1UE\n" +
+"AwwlRW50aWRhZCBDZXJ0aWZpY2Fkb3JhIFJhaXogZGUgQm9saXZpYTEMMAoGA1UE\n" +
+"CgwDQVRUMQswCQYDVQQGEwJCTzAeFw0xNjA0MDgxOTU0MDlaFw0yNjA0MDkxOTU0\n" +
+"MDlaMEsxLDAqBgNVBAMMI0VudGlkYWQgQ2VydGlmaWNhZG9yYSBQdWJsaWNhIEFE\n" +
+"U0lCMQ4wDAYDVQQKDAVBRFNJQjELMAkGA1UEBhMCQk8wggIiMA0GCSqGSIb3DQEB\n" +
+"AQUAA4ICDwAwggIKAoICAQDIQGzLQDJP3JGZP8jtFxp3iMliw4yhx3b6n53e4Qqo\n" +
+"8p229UqI5nuDxSY/sxpH6SZGCpbu+33wGhI/5MHrLZEW1GJ/UTNkRhbtJhhcWkYX\n" +
+"ovRp9MQ9HW14vIatjXJLzXErKGqsmTBPd9M56IYOoskh5i+6wn+kofBpDqSeoMP5\n" +
+"bh3GdH6q+D34KjuTPclnDLlztspTQa4p0VxRkdzBekPRghU3D7RbtYycGgRrfwoR\n" +
+"rxRol+9L+Wk1VYQ3rtAKwc2A2lm2FqX1LbKaI3RUpzyvNL/9mSRt9bdTx4CryQQR\n" +
+"KD8MqbBB1sQRXgjAx3ACan9wTCt8ck1gBdDzALFX7w/GwZiScsbjcu0+2ZZyfqxC\n" +
+"zmkWqysoZ/qgNbHD0HCADDaxOgONxiL1jkU2ATejuM3rkLPoojydKBO0/d7cLSgu\n" +
+"YJeesZIONhlPzMGfINNsPplSPSdNLdtYpD+xDmviagdm4/m7oAIFarMOudD3PPCT\n" +
+"HfGM4ZIFM4+/GI9JqqgYyD1kRlsPWETCT+rexrQ+snxnYgA2JxH7CJWRpjT2LWB8\n" +
+"Fznv2c9r91wPQ0avmodusP7c1FprA6GQO+nmmuCKXuU+ts6sPFuQIeKunpEy0nEF\n" +
+"YukvtLwOsT0gPSt5RgfmC80nLFt1yJNqbGOrAPDbvXJFjMXQbPlfZ/WjS4lsW3wU\n" +
+"kwIDAQABo4IBfTCCAXkwQwYIKwYBBQUHAQEENzA1MDMGCCsGAQUFBzAChidodHRw\n" +
+"czovL2VjcmIuYXR0LmdvYi5iby9lY3JiLmNhY2VydC5wZW0wHQYDVR0OBBYEFNKZ\n" +
+"3cFvJS4nqAvr3NnWkltiVaDCMA8GA1UdEwQIMAYBAf8CAQAwHwYDVR0jBBgwFoAU\n" +
+"oL9bVHaFJic5r9T5yu37yHC4jBYwTAYDVR0gBEUwQzBBBg1gRAAAAAEOAQIAAAAA\n" +
+"MDAwLgYIKwYBBQUHAgEWImh0dHBzOi8vZWNyYi5hdHQuZ29iLmJvL3BjZWNyYi5w\n" +
+"ZGYwgYUGA1UdHwR+MHwweqAnoCWGI2h0dHBzOi8vZWNyYi5hdHQuZ29iLmJvL2Ny\n" +
+"bGVjcmIuY3Jsok+kTTBLMS4wLAYDVQQDDCVFbnRpZGFkIENlcnRpZmljYWRvcmEg\n" +
+"UmFpeiBkZSBCb2xpdmlhMQwwCgYDVQQKDANBVFQxCzAJBgNVBAYTAkJPMAsGA1Ud\n" +
+"DwQEAwIBBjANBgkqhkiG9w0BAQsFAAOCAgEAVdEINfGVBN5w1YMKcayKgxuX56IE\n" +
+"hw2yjGDehKjvA8nOVoCM1j7WW3SwlOO29CpTfAHUmNJRvqdMTlUus9pYyw5BERap\n" +
+"EoE9ZQpEmorGj8FbJjCs4hTgc67TQ0KJVWPbnMsu5wobCmv4hq/PZDr2daXA9bFN\n" +
+"yvbNcjpea4mVC8WG5lqdflXeI6CHK91GMpw4UGSPqR7rrQj1VUqElyAAzN4PUXW8\n" +
+"3odDq6pRF7MNKr4LeI8xVL3pvLHAxrrq7dDRG807FzYjXpgKcLrExkNtZPGe4tLI\n" +
+"1cvaxVffaPgoYyI5nbjHQDnJhCdrrugAC9xxNq1t17yO0S8wFwgs9JWcIU/8ScE5\n" +
+"4ht9cz0VneAj6yZGUziwGVRYFwhOMUtrzDdeNZW3+yhzUVasU2EZTa5z+/EWHLZD\n" +
+"vrjWTMcyMHETquDtj/lCQHlQGzUwu+DwKedxssIVxDO/voO9wrnllqoiN8OwbSN1\n" +
+"/LledKCtYD4h6U3M74NOcvudegeshPjdKGTYAz39jsEX+qx+kOQuMzeisYv0E7aX\n" +
+"zkpyxZIVfOP9TWspof+K0whcEGsKwaBSu7x8sxV2rFqbF59KNSgE5RSMCXGb5QPu\n" +
+"h0NlZ0oh8QaUrPMhNA03kzRMerMWWx94ymJ7AvUdOxg03I7WJGPTlAbJRXXL07Pk\n" +
+"IFhe04ow7MCS8Bc=\n" +
+"-----END CERTIFICATE-----\n" +
+"Subject: CN=Entidad Certificadora Raiz de Bolivia,O=ATT,C=BO\n" +
+"Issuer: CN=Entidad Certificadora Raiz de Bolivia,O=ATT,C=BO\n" +
+"-----BEGIN CERTIFICATE-----\n" +
+"MIIGMTCCBBmgAwIBAgIISamxnc8f69kwDQYJKoZIhvcNAQELBQAwSzEuMCwGA1UE\n" +
+"AwwlRW50aWRhZCBDZXJ0aWZpY2Fkb3JhIFJhaXogZGUgQm9saXZpYTEMMAoGA1UE\n" +
+"CgwDQVRUMQswCQYDVQQGEwJCTzAeFw0xNTA3MjkxNTAyMThaFw0zNTA3MjkxNTAy\n" +
+"MThaMEsxLjAsBgNVBAMMJUVudGlkYWQgQ2VydGlmaWNhZG9yYSBSYWl6IGRlIEJv\n" +
+"bGl2aWExDDAKBgNVBAoMA0FUVDELMAkGA1UEBhMCQk8wggIiMA0GCSqGSIb3DQEB\n" +
+"AQUAA4ICDwAwggIKAoICAQCcTezI6yY5popUdIPvtPYmsO50zi+MVk2pVIMpEko0\n" +
+"n7y0axXavrhXkvXb9VdyTEWBILhPOldqrhWJRsXXcbFqqsHPbPt+9IEiPSd0fVPk\n" +
+"fU+VZVl2TY+H6mM4oMUwo1CPnCVJK8laog5yhiSCPADEA3nc/Uoc2tPeojUQIRzq\n" +
+"63fYMIXjF9anIm8Ykkoyi3eiO756J1U/6LsA2zjbhMwDm2KDHRwuIDqEK8Fk8Pca\n" +
+"3cuNGjITBQPMS5dsc1ChmMVhFWtk1O7eAcprSINADBNsDQg3LE+/sgeK2NG4NTgG\n" +
+"28nJiAW10CyrhzAtxxgrzZYlZtSCMSeSIj3FpgxQZKY/yGNd7agZCr9vL2nKewbJ\n" +
+"WZ7SyNojxWsDveA9dWp58WWUcmWK7GWqqEik/bqcvXJ9ijW30vPdbAQ/MiUVd0Uz\n" +
+"6eyVMBgGsRH0GGilk07Laxnj2+Zc7nJ/Em+CqlBBFu/FndCAFGyqFLJwo9aqDDYd\n" +
+"SZOVqnRSod76hVgqJunkrm1aAIsMT2hrNvDl85FLbD7dIMUikHsovHF6OFuL5k8C\n" +
+"0/FC+RJtTYQvNNxwa5vzc8beF1PuB9js2mp2a8cpXvnbsZ22bAu/CYULvNqwkM7t\n" +
+"Aw/y/LGvAwnrQRJYAwjOnVAVjVxl5/sbpacYHn4kQlh7EyHLE3SAO9RgJPkUoOuA\n" +
+"QwIDAQABo4IBFzCCARMwHQYDVR0OBBYEFKC/W1R2hSYnOa/U+crt+8hwuIwWMA8G\n" +
+"A1UdEwQIMAYBAf8CAQEwTAYDVR0gBEUwQzBBBg1gRAAAAAEOAQIAAAAAMDAwLgYI\n" +
+"KwYBBQUHAgEWImh0dHBzOi8vZWNyYi5hdHQuZ29iLmJvL3BjZWNyYi5wZGYwgYUG\n" +
+"A1UdHwR+MHwweqAnoCWGI2h0dHBzOi8vZWNyYi5hdHQuZ29iLmJvL2NybGVjcmIu\n" +
+"Y3Jsok+kTTBLMS4wLAYDVQQDDCVFbnRpZGFkIENlcnRpZmljYWRvcmEgUmFpeiBk\n" +
+"ZSBCb2xpdmlhMQwwCgYDVQQKDANBVFQxCzAJBgNVBAYTAkJPMAsGA1UdDwQEAwIB\n" +
+"BjANBgkqhkiG9w0BAQsFAAOCAgEAhaGGYu9em7dhFzdHtLriB0XbCInniC+PBzb3\n" +
+"4UoRBhnkdMLXiyhC0UJsT++YwyGaW+ddiFZx0rWx7H1CMIClWDTb2o16JyxwQ7mQ\n" +
+"dTG+05T0QAzONtZm5vtKrqkEwH6lz0KGhum5w4Q18rRp2REqASWCRF8N6fcQb0bx\n" +
+"WyYWemVAq1yAxOfnCnAMTbitLvvIyrDXNUOBx7bnSS3Fqs2ZIoI1XvEgL5rEAuyx\n" +
+"4krKN6zdSI9nwX8So2BGAhVL+ThYRiplAVko8qDQro6dcclaE4Mf2SApeSW1D2jR\n" +
+"ZusfqlwXbjnDTS0NXtZBfl9K36I0AIe1CGWTkQqmCflHhaRrhpGKZqm1qvM54qvW\n" +
+"ldEYenmO8FX7GegeVF+CMadNsrHcKrlUGwYTy4tKhRxhaE27OXwGye4CGt30qYDN\n" +
+"57r9bCIWq62tFBftcMpmp0PrOVd1rHBCrsT0eM/9tYnZ2SgXCBHBkfGWOjiasDMf\n" +
+"XpfMZ/xhXVn9z1Drhsb+ieysIRHVr2KYiJWmvRqlQBk7AWKdWWPiGgI0AUfmh7Lf\n" +
+"ljl6RjzvDaw4OjLEf6mFhb2qwNvJzoYRHPi4PmtCJKz/jwPhJYbKdtE1bQIjFVqe\n" +
+"2XXJrlKJPjXcygNgGhdlTnPURjYr7hdcp2cYbdTZUrsOFyCOXrKGst8Kx9fsChwQ\n" +
+"uPbPl14=\n" +
+"-----END CERTIFICATE-----\n" +
+"";
+        String pemUser = "-----BEGIN CERTIFICATE-----\n" +
+"MIIHMjCCBRqgAwIBAgIIHzPuefE4+bswDQYJKoZIhvcNAQELBQAwSzEsMCoGA1UE\n" +
+"AwwjRW50aWRhZCBDZXJ0aWZpY2Fkb3JhIFB1YmxpY2EgQURTSUIxDjAMBgNVBAoM\n" +
+"BUFEU0lCMQswCQYDVQQGEwJCTzAeFw0xOTA4MjAyMzExNDdaFw0yMDA4MTkyMzEx\n" +
+"NDdaMIHrMQswCQYDVQQuEwJDSTEmMCQGA1UEAwwdTkVNRUNJTyBST05BTEQgQ09B\n" +
+"UklURSBNQU1BTkkxEjAQBgNVBAUTCTEyMDQzMTAyMDE3MDUGA1UEDAwuUmVzcG9u\n" +
+"c2FibGUgZGUgQW7DoWxpc2lzIHkgRGlzZcOxbyBkZSBTaXN0ZW1hczEMMAoGA1UE\n" +
+"CwwDVUlEMQ4wDAYDVQQKDAVBRFNJQjELMAkGA1UEBhMCQk8xFDASBgcrBgEBAQEA\n" +
+"DAc2ODE3NzAyMSYwJAYDVQQNDB1QZXJzb25hIEp1cmlkaWNhIEZpcm1hIFNpbXBs\n" +
+"ZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJbKJ04zHmzTOsTlqIrR\n" +
+"IWBCyzYh0QOzFXIH4tE0IslqXeN1T/aczEPv7M7lirmDJKWGqdnuw8aViORoAe9a\n" +
+"qQOLr4eMhDgn5H+2Sz3JSnoG0KvZBh1mBV0dz3m9CwLEE2Y7OHKUweiaJH8dcwii\n" +
+"VqqJp8oMU4yqeDD7PJ/Rwv7ELGwjDM6RqweKPxLQfXC7x4w65gvG7pmiz6s/BVo8\n" +
+"55wUYQ+trjLHmHJkTkpbGwz4huwB0nYKVx9JOXIfDGEMWlCzgBqFvxfLgEsZ89CJ\n" +
+"X1JPw0MHGGTBDJskM+fJCvfcG89bt+HZvS12ZqKrn9+HJ4+QeWJSnLQGbaD03v5x\n" +
+"9+sCAwEAAaOCAncwggJzMHkGCCsGAQUFBwEBBG0wazA7BggrBgEFBQcwAoYvaHR0\n" +
+"cHM6Ly93d3cuZmlybWFkaWdpdGFsLmJvL2Zpcm1hZGlnaXRhbF9iby5wZW0wLAYI\n" +
+"KwYBBQUHMAGGIGh0dHA6Ly93d3cuZmlybWFkaWdpdGFsLmJvL29jc3AvMB0GA1Ud\n" +
+"DgQWBBTV8/mGMM4uN0E+fI4+UTj1pppfRDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaA\n" +
+"FNKZ3cFvJS4nqAvr3NnWkltiVaDCMIG8BgNVHSAEgbQwgbEwUAYOYEQAAAABDgEC\n" +
+"AAEAAAAwPjA8BggrBgEFBQcCARYwaHR0cHM6Ly93d3cuZmlybWFkaWdpdGFsLmJv\n" +
+"L3BvbGl0aWNhanVyaWRpY2EucGRmMF0GD2BEAAAAAQ4BAgABAgEAADBKMEgGCCsG\n" +
+"AQUFBwICMDweOgBQAGUAcgBzAG8AbgBhACAASgB1AHIAaQBkAGkAYwBhACAARgBp\n" +
+"AHIAbQBhACAAUwBpAG0AcABsAGUwgZMGA1UdHwSBizCBiDCBhaAyoDCGLmh0dHA6\n" +
+"Ly93d3cuZmlybWFkaWdpdGFsLmJvL2Zpcm1hZGlnaXRhbF9iby5jcmyiT6RNMEsx\n" +
+"LDAqBgNVBAMMI0VudGlkYWQgQ2VydGlmaWNhZG9yYSBQdWJsaWNhIEFEU0lCMQ4w\n" +
+"DAYDVQQKDAVBRFNJQjELMAkGA1UEBhMCQk8wCwYDVR0PBAQDAgTwMCcGA1UdJQQg\n" +
+"MB4GCCsGAQUFBwMCBggrBgEFBQcDAwYIKwYBBQUHAwQwIAYDVR0RBBkwF4EVbmNv\n" +
+"YXJpdGVAYWRzaWIuZ29iLmJvMA0GCSqGSIb3DQEBCwUAA4ICAQB5gsOtaacNCGIj\n" +
+"W0NffAtuKME5WKl2pWlkb6AYWpMMea4dX3wLZFxetE7/u0zN+OAZ4MDiTkCV5o1G\n" +
+"mHKXi4kryhV9xp+xGhTBfJ9irTeVBUcNJacN0pO6BzhgLh49n/lTjtmLNw4yx7nr\n" +
+"1t1QtUs3ZFTurayRau6XAtvLAWYTcu0ZcIkoFjkd9pCtPzJXKGwH44xb3Z2gk8W/\n" +
+"WgzMFWFzqMnBdWR5YlMBy4DGBvOYUw8nwwK6hN4qssiSUp2ZBl1oT9jvDIRnMZGA\n" +
+"0c8Z4kdam9RWunfptKgi9JtsToB8HikMxaIttKltfyr6k+gMY5NV+ojDMG2AGDzT\n" +
+"cuZNzYOQ6tHyRj+NuPENP7rukC6Oyou7ZzgBorElisxFBE7Vi8fLGqdcH9sJXDGr\n" +
+"RQy56apLg8qfFLLyyELngKZupZztS/MiXnHCZyxu9oTfAp530IAoSmUR87kdZmWi\n" +
+"AOikZnNrEmd2EkpkDFbKUGRc6qiwOb1WGWkaxbQGbALGYOXWi0aKWIQT2rzblZtO\n" +
+"7mYjtDPAP71iuiXeg8/ccRdm7FO5ZSSTjvxSHbvuQLj9ln52LXP93ePnsQn0bgzx\n" +
+"uYOESSdMZWEy9LfNfXCky1UdJxVUl7E0dVZDZPjewws5nmsa70fkcYrFXtgs76Hi\n" +
+"XYU9gh2uxSMVOfxZ30NkWL1oJs3itA==\n" +
+"-----END CERTIFICATE-----";
+        
+        CertificateData certificateDataUser = new CertificateData(pemUser);
+        CertificateData certificateDataIssuer = new CertificateData(pemAdsib);
+        CertificateData.CertOcspStatus certificateStatus = certificateDataUser.verifRevocationWithOCSP(certificateDataIssuer.getFirstCertificate());
+        System.out.println("CERT STATUS: "+certificateStatus);
+    }
+}

@@ -1,0 +1,14 @@
+/.metadata/
+/target/
+.classpath
+.project
+.settings/
+MyOutImage.jp2
+MyOutImage.wsq
+bin/
+cert.pem
+firmadigital_bo.crl
+
+.idea
+target/
+fido.iml
